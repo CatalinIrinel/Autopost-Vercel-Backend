@@ -4,9 +4,7 @@ const http = require('http');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const mongoose = require('mongoose');
-const passport = require('passport');
 const session = require('express-session');
-const path = require('path')
 
 //routes
 const { uploadRouter } = require('./routes/uploadRoutes.js');
@@ -38,11 +36,6 @@ mongoose
     console.log(err.message);
   });
 
-app.use(express.static(path.join(__dirname, '/frontend/build')));
-
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '/frontend/build.index.html'));
-});
 app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
