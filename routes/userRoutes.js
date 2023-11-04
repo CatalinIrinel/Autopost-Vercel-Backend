@@ -12,6 +12,7 @@ userRouter.get(
   isAdmin,
   expressAsyncHandler(async (req, res) => {
     const users = await User.find({});
+    users.save();
     res.send(users);
   })
 );
@@ -22,6 +23,7 @@ userRouter.get(
   isAdmin,
   expressAsyncHandler(async (req, res) => {
     const user = await User.findById(req.params.id);
+    user.save();
     if (user) {
       res.send(user);
     } else {
@@ -55,6 +57,7 @@ userRouter.delete(
   isAdmin,
   expressAsyncHandler(async (req, res) => {
     const user = await User.findById(req.params.id);
+    user.save();
     if (user) {
       if (user.email === 'catalin@peakngo.com') {
         res.status(400).send({ message: 'Can Not Delete Admin User' });
@@ -72,6 +75,7 @@ userRouter.post(
   '/signin',
   expressAsyncHandler(async (req, res) => {
     const user = await User.findOne({ email: req.body.email });
+
     if (user) {
       if (bcrypt.compareSync(req.body.password, user.password)) {
         res.send({
@@ -115,6 +119,7 @@ userRouter.put(
   isAuth,
   expressAsyncHandler(async (req, res) => {
     const user = await User.findById(req.user._id);
+    user.save();
     if (user) {
       user.firstName = req.body.firstName || user.firstName;
       user.lastName = req.body.lstName || user.lastName;

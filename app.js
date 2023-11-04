@@ -5,6 +5,8 @@ const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const mongoose = require('mongoose');
 const session = require('express-session');
+const bcrypt = require('bcryptjs');
+// const { MongoClient, ServerApiVersion } = require('mongodb');
 
 //routes
 const { uploadRouter } = require('./routes/uploadRoutes.js');
@@ -23,18 +25,22 @@ const app = express();
 
 let server = http.createServer(app);
 
-mongoose.set('strictQuery', true);
-mongoose
-  .connect(`${process.env.MONGO_URI}`)
-  .then(() => {
-    console.log('Connected to DB');
-    server.listen(port, () => {
-      console.log(`Merge backend-ul acuma pe port-ul ${port}`);
+async function connectDB() {
+  mongoose.connection.on('connected', () =>
+    console.info('Data base connected')
+  );
+  mongoose.set('bufferCommands', false);
+  mongoose.set('strictQuery', true);
+  await mongoose
+    .connect(`${process.env.MONGO_URI}`)
+    .then(() => {
+      console.log('Connected to DB');
+    })
+    .catch((err) => {
+      console.log(err.message);
     });
-  })
-  .catch((err) => {
-    console.log(err.message);
-  });
+}
+connectDB();
 
 app.use(cookieParser());
 app.use(express.json());
@@ -49,7 +55,7 @@ app.use(
 );
 
 const corsOptions = {
-  origin: true,
+  origin: '*',
   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
   credentials: true,
   exposedHeaders: ['x-auth-token'],
@@ -70,4 +76,8 @@ app.use((err, req, res, next) => {
 
 app.get('/', (req, res) => {
   res.send('this works i hope');
+});
+
+server.listen(port, () => {
+  console.log(`Merge backend-ul acuma pe port-ul ${port}`);
 });
